@@ -5,6 +5,7 @@
 #include <mutex>
 
 #include "StdoutWriter.hpp"
+#include "MMapFileWriter.hpp"
 #include "Timestamp.h"
 #include "Writer.h"
 
@@ -20,7 +21,8 @@ LogFile::LogFile(const std::string& basename, int32_t rollSize, int32_t flushInt
     , lastRoll_(Timestamp::now().microSeconds())
 {
     // TEST
-    writers_["stdout"] = Writer::ptr(new StdoutWriter());
+    // writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
+    writers_["mmap"] = Writer::ptr(new MMapFileWriter("log"));
 }
 
 LogFile::~LogFile() {}

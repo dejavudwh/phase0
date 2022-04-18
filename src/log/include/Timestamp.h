@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 #include <string>
 #include <time.h>
@@ -11,6 +13,7 @@ public:
     explicit Timestamp(int64_t microSeconds);
     static Timestamp now();
     std::string toString() const;
+    std::string toStringYMM() const;
     int64_t microSeconds() const;
 
 private:

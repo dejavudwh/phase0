@@ -24,9 +24,14 @@ std::string Timestamp::toString() const
     return buf;
 }
 
-int64_t Timestamp::microSeconds() const 
+std::string Timestamp::toStringYMM() const
 {
-    return microSeconds_;
+    char buf[48] = {0};
+    tm* tm_time = localtime(&microSeconds_);
+    snprintf(buf, 48, "%4d-%02d-%02d", tm_time->tm_year + 1900, tm_time->tm_mon + 1, tm_time->tm_mday);
+    return buf;
 }
+
+int64_t Timestamp::microSeconds() const { return microSeconds_; }
 
 }  // namespace phase0

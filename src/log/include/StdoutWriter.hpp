@@ -14,7 +14,7 @@ namespace phase0
 class StdoutWriter : public Writer
 {
 public:
-    StdoutWriter() : buffer_(new char[1024 * 60]), writen_(0) {}
+    StdoutWriter(const std::string basename) : Writer(basename), buffer_(new char[1024 * 60]), writen_(0) {}
     ~StdoutWriter() { delete[] buffer_; }
     void append(const char* data, int32_t len) override
     {
