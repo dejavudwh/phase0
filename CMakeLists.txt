@@ -9,8 +9,8 @@ set(CMAKE_BUILD_TYPE "Debug")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)
 
-include_directories(${CMAKE_SOURCE_DIR}/src/include)
-include_directories(${CMAKE_SOURCE_DIR}/example)
+include_directories(${CMAKE_SOURCE_DIR}/src/log/include)
+include_directories(${CMAKE_SOURCE_DIR}/examples)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
 add_subdirectory(src)
