@@ -52,7 +52,8 @@ private:
         {
             close(fd_);
         }
-        // mkdir(fileName.c_str(), 0755);
+
+        fileName.append(".txt");
         fd_ = open(fileName.c_str(), O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
         if (fd_ < 0)
         {

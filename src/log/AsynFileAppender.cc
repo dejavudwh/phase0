@@ -46,14 +46,13 @@ void AsynFileAppender::stop()
     running_ = false;
 
     cond_.notify_one();
-    persistThread_.join();
+    persistThread_.detach();
 }
 
 void AsynFileAppender::append(const char* data, size_t length)
 {
     std::unique_lock<std::mutex> lock(mutex_);
 
-    std::cout << "AsynFileAppender::append:" << data << std::endl;
     if (curBuffer_->available() >= length)
     {
         curBuffer_->append(data, length);
@@ -71,7 +70,7 @@ void AsynFileAppender::listenLogAppend()
 {
     std::vector<std::unique_ptr<LogBuffer>> persistBuffers;
     // TODO from config
-    LogFile logFile(basename_, 1000, 15);
+    LogFile logFile(basename_, 1000, 5);
 
     latchCond_.notify_one();
 
@@ -88,7 +87,6 @@ void AsynFileAppender::listenLogAppend()
                 continue;
             }
 
-            std::cout << "AsynFileAppender::push:" << curBuffer_->data() << std::endl;
             buffers_.push_back(std::move(curBuffer_));
             persistBuffers.swap(buffers_);
             curBuffer_.reset(new LogBuffer());

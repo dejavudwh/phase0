@@ -4,8 +4,8 @@
 #include <memory>
 #include <mutex>
 
-#include "StdoutWriter.hpp"
 #include "MMapFileWriter.hpp"
+#include "StdoutWriter.hpp"
 #include "Timestamp.h"
 #include "Writer.h"
 
@@ -20,8 +20,8 @@ LogFile::LogFile(const std::string& basename, int32_t rollSize, int32_t flushInt
     , lastFlush_(Timestamp::now().microSeconds())
     , lastRoll_(Timestamp::now().microSeconds())
 {
-    // TEST
-    // writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
+    // for test
+    writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
     writers_["mmap"] = Writer::ptr(new MMapFileWriter("log"));
 }
 
@@ -29,29 +29,30 @@ LogFile::~LogFile() {}
 
 void LogFile::append(const char* log, int32_t length)
 {
+    bool isRoll = false;
     for (auto& it : writers_)
     {
         auto& writer = it.second;
         writer->append(log, length);
-        std::cout << writer->writtenBytes() << " <===> " << rollSize_ + length << std::endl;
         if (writer->writtenBytes() >= rollSize_ + length)
         {
             rollFile();
+            isRoll = true;
         }
-        else
+    }
+
+    if (!isRoll)
+    {
+        int64_t now = Timestamp::now().microSeconds();
+        if (now - lastFlush_ >= flushIntervel_)
         {
-            int64_t now = Timestamp::now().microSeconds();
-            if (now - lastFlush_ >= flushIntervel_)
-            {
-                std::cout << "Flush Intervel Time:" << now - lastFlush_ << std::endl;
-                writer->flush();
-                lastFlush_ = now;
-            }
-            else if (now - lastRoll_ >= oneDayMicroSeconds)
-            {
-                rollFile();
-                lastRoll_ = now;
-            }
+            flush();
+            lastFlush_ = now;
+        }
+        else if (now - lastRoll_ >= oneDayMicroSeconds)
+        {
+            rollFile();
+            lastRoll_ = now;
         }
     }
 }

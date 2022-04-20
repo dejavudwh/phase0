@@ -9,7 +9,7 @@
 
 namespace phase0
 {
-Logger::Logger() : level_(LogLevel::DEBUG), mutex_(), appender_(LogAppender::ptr(new AsynFileAppender("log")))
+Logger::Logger() : level_(LogLevel::INFO), mutex_(), appender_(LogAppender::ptr(new AsynFileAppender("log")))
 {
 }
 void Logger::setAppender(LogAppender::ptr appender)
@@ -22,7 +22,7 @@ void Logger::writeLog(
     LogLevel level, const char* fileName, const char* functionName, int32_t lineNum, const char* format, ...)
 {
     // TODO from config file
-    if (level > level_)
+    if (level < level_)
     {
         return;
     }
