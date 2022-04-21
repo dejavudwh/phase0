@@ -109,14 +109,6 @@ private:
     {
         ConfigVarMap& cvm = getDatas();
         const auto& it = cvm.find(name);
-        for (auto& node : getDatas())
-        {
-            LOG_DEBUG("LookupBase: %s %s %s %s",
-                      name.c_str(),
-                      node.first.c_str(),
-                      node.second->toString().c_str(),
-                      name == node.first ? "true" : "false");
-        }
         return it == cvm.end() ? nullptr : it->second;
     }
 
@@ -140,7 +132,6 @@ private:
                 if (node.second.IsScalar())
                 {
                     var->fromString(node.second.Scalar());
-                    LOG_DEBUG("var->fromString");
                 }
                 else
                 {

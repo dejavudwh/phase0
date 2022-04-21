@@ -1,20 +1,14 @@
 #include <iostream>
 #include <vector>
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 
-#define F(name) \
-    do          \
-    {           \
-        f(name); \
-    } while (0)
-
-void f(const std::string& name) { std::cout << "string " << name << std::endl; }
-
-void f(const char* name) { std::cout << "char*" << name << std::endl; }
-
 int main() 
 {
-    string str("asd");
-    F(str);
+    YAML::Node nodes = YAML::Load("[1,2,3]");
+        std::vector<int> vec;
+        for(size_t i = 0; i < nodes.size(); ++i) {
+            std::cout << nodes[i];
+        }
 }

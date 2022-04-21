@@ -1,4 +1,17 @@
 server:
-    addr:
-      aaa: [1, 2]
-      zxc: 0
+    test_int: 8080
+    test_vec:
+      - 1
+      - 2
+      - 3
+    test_list:
+      - 4.0
+      - 5.0
+      - 6.0
+    test_map:
+      k1: v1
+      k2: v2
+    test_combine:
+      k1: [1, 2, 3]
+      k2: [4, 5, 6]
+
