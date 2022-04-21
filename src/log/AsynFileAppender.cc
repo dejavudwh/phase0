@@ -36,8 +36,11 @@ void AsynFileAppender::start()
     running_ = true;
 
     persistThread_ = threadWrapper();
-    std::unique_lock<std::mutex> lock(latch_);
-    latchCond_.wait(lock);
+    {
+        std::unique_lock<std::mutex> lock(latch_);
+        latchCond_.wait(lock);
+    }
+    persistThread_.detach();
 }
 
 void AsynFileAppender::stop()
@@ -46,7 +49,7 @@ void AsynFileAppender::stop()
     running_ = false;
 
     cond_.notify_one();
-    persistThread_.detach();
+    // persistThread_.join();
 }
 
 void AsynFileAppender::append(const char* data, size_t length)

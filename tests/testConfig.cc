@@ -2,6 +2,7 @@
 #include <thread>
 
 #include "Config.hpp"
+#include "Logger.h"
 
 int main()
 {
@@ -18,4 +19,6 @@ int main()
     });
 
     t1.join();
+
+    return 0;
 }

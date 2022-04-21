@@ -12,6 +12,7 @@ namespace phase0
 Logger::Logger() : level_(LogLevel::INFO), mutex_(), appender_(LogAppender::ptr(new AsynFileAppender("log")))
 {
 }
+
 void Logger::setAppender(LogAppender::ptr appender)
 {
     std::unique_lock<std::mutex> lock(mutex_);

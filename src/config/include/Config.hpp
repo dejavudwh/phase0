@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <list>
 #include <map>
@@ -139,6 +140,7 @@ private:
                 if (node.second.IsScalar())
                 {
                     var->fromString(node.second.Scalar());
+                    LOG_DEBUG("var->fromString");
                 }
                 else
                 {
@@ -176,7 +178,5 @@ private:
             throw std::invalid_argument(name);
         }
     }
-
-    static Config::ConfigVarMap datas_;
 };
 }  // namespace phase0

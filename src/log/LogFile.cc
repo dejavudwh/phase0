@@ -21,57 +21,59 @@ LogFile::LogFile(const std::string& basename, int32_t rollSize, int32_t flushInt
     , lastRoll_(Timestamp::now().microSeconds())
 {
     // for test
-    writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
     writers_["mmap"] = Writer::ptr(new MMapFileWriter("log"));
+    writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
 }
 
 LogFile::~LogFile() {}
 
 void LogFile::append(const char* log, int32_t length)
 {
-    bool isRoll = false;
+    int isRollNum = 0;
     for (auto& it : writers_)
     {
         auto& writer = it.second;
         writer->append(log, length);
         if (writer->writtenBytes() >= rollSize_ + length)
         {
-            rollFile();
-            isRoll = true;
+            rollFile(writer);
+            isRollNum++;
         }
-    }
-
-    if (!isRoll)
-    {
-        int64_t now = Timestamp::now().microSeconds();
-        if (now - lastFlush_ >= flushIntervel_)
+        else
         {
-            flush();
-            lastFlush_ = now;
-        }
-        else if (now - lastRoll_ >= oneDayMicroSeconds)
-        {
-            rollFile();
-            lastRoll_ = now;
+            int64_t now = Timestamp::now().microSeconds();
+            if (now - lastFlush_ >= flushIntervel_)
+            {
+                flush(writer);
+                lastFlush_ = now;
+            }
+            else if (now - lastRoll_ >= oneDayMicroSeconds)
+            {
+                rollFile(writer);
+                lastRoll_ = now;
+            }
         }
     }
 }
 
-void LogFile::flush()
+void LogFile::flush(std::shared_ptr<Writer>& writer)
 {
-    for (auto& it : writers_)
-    {
-        it.second->flush();
-    }
+    // for (auto& it : writers_)
+    // {
+    //     it.second->flush();
+    // }
+    writer->flush();
 }
 
-void LogFile::rollFile()
+void LogFile::rollFile(std::shared_ptr<Writer>& writer)
 {
-    for (auto& it : writers_)
-    {
-        it.second->flush();
-        it.second->reset();
-    }
+    // for (auto& it : writers_)
+    // {
+    //     it.second->flush();
+    //     it.second->reset();
+    // }
+    writer->flush();
+    writer->reset();
 }
 
 void LogFile::addWriter(const std::string& name, Writer::ptr& writer)

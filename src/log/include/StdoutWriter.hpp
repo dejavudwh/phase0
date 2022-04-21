@@ -21,7 +21,7 @@ public:
         memcpy(buffer_ + writen_, data, len);
         writen_ += len;
     }
-    void flush() override { std::cout << buffer_ << std::endl; }
+    void flush() override { std::cout << std::string(buffer_) << std::endl; }
     uint32_t writtenBytes() const override { return writen_; }
     void reset() override
     {

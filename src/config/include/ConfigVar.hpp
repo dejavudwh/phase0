@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <exception>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -17,7 +18,7 @@
 namespace phase0
 {
 template <typename T>
-const char* typeToName()
+static const char* typeToName()
 {
     static const char* name = abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr);
     return name;
@@ -76,14 +77,13 @@ public:
         }
         catch (std::exception& e)
         {
-            LOG_FATAL("ConfigVar::toString exeception: %s, because convert from %s(name = %s) to string",
+            LOG_FATAL("ConfigVar::toString exeception: %s, because convert from %s(%s) to string",
                       e.what(),
-                      getTypeName().c_str(),
-                      val_);
+                      getTypeName().c_str()
+                      description_.c_str());
         }
 
-        LOG_FATAL("Type %s to string failed", getTypeName().c_str());
-        exit(1);
+        return "";
     }
 
     bool fromString(const std::string& val) override
@@ -94,10 +94,10 @@ public:
         }
         catch (std::exception& e)
         {
-            LOG_FATAL("ConfigVar::toString exeception: %s, because convert from string to %s(name = %s)",
+            LOG_FATAL("ConfigVar::FromString exeception: %s, because convert from string(%s) to %s",
                       e.what(),
-                      getTypeName().c_str(),
-                      val_);
+                      val.c_str(),
+                      getTypeName().c_str());
         }
 
         return true;

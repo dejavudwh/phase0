@@ -17,8 +17,8 @@ public:
     ~LogFile();
 
     void append(const char* log, int32_t size);
-    void flush();
-    void rollFile();
+    void flush(std::shared_ptr<Writer>& writer);
+    void rollFile(std::shared_ptr<Writer>& writer);
 
     void addWriter(const std::string& name, Writer::ptr& Writer);
     void deleteWriter(const std::string& name);
