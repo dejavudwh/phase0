@@ -19,8 +19,9 @@ namespace phase0
 class MMapFileWriter : public Writer
 {
 public:
+    // TODO Integration Configuration
     MMapFileWriter(std::string basename)
-        : Writer(basename), fd_(-1), memSize_(1024 * 60), writen_(0), flushPos_(0), partNum(1)
+        : Writer(basename), fd_(-1), memSize_(1024 * 60), writen_(0), partNum(1)
     {
         createResources(getFileName());
     };
@@ -32,7 +33,6 @@ public:
             fprintf(stderr, "mmap memory overflow ,errno=%d", errno);
             return;
         }
-        std::cout << "data:" << writen_ << std::endl;
         memcpy(buffer_ + writen_, data, len);
         writen_ += len;
     }
@@ -40,10 +40,7 @@ public:
     {
         if (buffer_ != MAP_FAILED)
         {
-            // msync(buffer_, memSize_, MS_ASYNC);
-            msync(buffer_ + flushPos_, writen_, MS_ASYNC);
-            // std::cout << "data:\n" << std::string(buffer_, writen_) << std::endl;
-            flushPos_ = writen_;
+            msync(buffer_, writen_, MS_ASYNC);
         }
     }
     uint32_t writtenBytes() const { return writen_; }
@@ -96,7 +93,6 @@ private:
     char* buffer_;
     int32_t memSize_;
     int32_t writen_;
-    int32_t flushPos_;
     size_t partNum;
 };
 }  // namespace phase0

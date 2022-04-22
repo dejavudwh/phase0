@@ -79,6 +79,8 @@ public:
     void error(const char* fileName, const char* functionName, int32_t lineNum, const char* format, ...);
     void fatal(const char* fileName, const char* functionName, int32_t lineNum, const char* format, ...);
 
+    static void initDefaultConfig();
+
 private:
     Logger();
     std::mutex mutex_;

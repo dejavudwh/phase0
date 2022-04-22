@@ -6,8 +6,8 @@
 
 namespace phase0
 {
-AsynFileAppender::AsynFileAppender(const std::string& basename)
-    : basename_(basename)
+AsynFileAppender::AsynFileAppender(int bufferSize) :
+    LogAppender()
     , started_(false)
     , running_(false)
     , mutex_()
@@ -16,7 +16,8 @@ AsynFileAppender::AsynFileAppender(const std::string& basename)
     , latchCond_()
     , threadWrapper(
           [&]() -> std::thread { return std::thread(std::bind(&AsynFileAppender::listenLogAppend, this)); })
-    , curBuffer_(new LogBuffer())
+    , curBuffer_(new LogBuffer(bufferSize))
+    , bufferSize_(bufferSize)
 {
     start();
 }
@@ -48,7 +49,6 @@ void AsynFileAppender::stop()
     running_ = false;
 
     cond_.notify_one();
-    // persistThread_.join();
 }
 
 void AsynFileAppender::append(const char* data, size_t length)
@@ -62,7 +62,7 @@ void AsynFileAppender::append(const char* data, size_t length)
     else
     {
         buffers_.push_back(std::move(curBuffer_));
-        curBuffer_.reset(new LogBuffer());
+        curBuffer_.reset(new LogBuffer(bufferSize_));
         curBuffer_->append(data, length);
         cond_.notify_one();
     }
@@ -71,8 +71,8 @@ void AsynFileAppender::append(const char* data, size_t length)
 void AsynFileAppender::listenLogAppend()
 {
     std::vector<std::unique_ptr<LogBuffer>> persistBuffers;
-    // TODO from config
-    LogFile logFile(basename_, 1000, 5);
+    // TODO Integration Configuration
+    LogFile logFile(basename_, 10240, 5);
 
     latchCond_.notify_one();
 
@@ -91,7 +91,8 @@ void AsynFileAppender::listenLogAppend()
 
             buffers_.push_back(std::move(curBuffer_));
             persistBuffers.swap(buffers_);
-            curBuffer_.reset(new LogBuffer());
+            buffers_.clear();
+            curBuffer_.reset(new LogBuffer(bufferSize_));
             curBuffer_->clear();
         }
 

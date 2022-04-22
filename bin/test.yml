@@ -1,17 +1,17 @@
-server:
-    test_int: 8080
-    test_vec:
-      - 1
-      - 2
-      - 3
-    test_list:
-      - 4.0
-      - 5.0
-      - 6.0
-    test_map:
-      k1: v1
-      k2: v2
-    test_combine:
-      k1: [1, 2, 3]
-      k2: [4, 5, 6]
-
+logger:
+    level: info
+    appender: 
+        type: AsynFileAppender
+        buffer_size: 1024
+        log_file:  
+            type: LogFile
+            roll_size: 10240
+            flush_intervel: 10
+            mem_size: 61440
+            file_name: "log"
+            writers:
+              - stdout_writer
+              - mmapfile_writer
+              
+        
+    

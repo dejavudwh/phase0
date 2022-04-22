@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 namespace phase0
 {
@@ -13,5 +14,4 @@ public:
     virtual ~LogAppender(){};
     virtual void append(const char* data, size_t length) = 0;
 };
-
 }  // namespace phase0

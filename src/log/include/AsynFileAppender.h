@@ -18,11 +18,12 @@ namespace phase0
 class AsynFileAppender : public LogAppender
 {
 public:
-    AsynFileAppender(const std::string& basename);
+    AsynFileAppender(int bufferSize);
     ~AsynFileAppender();
     void append(const char* data, size_t length);
     void start();
     void stop();
+    int getBufferSize();
 
 private:
     void listenLogAppend();
@@ -41,6 +42,6 @@ private:
 
     std::unique_ptr<LogBuffer> curBuffer_;
     std::vector<std::unique_ptr<LogBuffer>> buffers_;
+    int bufferSize_;
 };
-
 }  // namespace phase0

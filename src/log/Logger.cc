@@ -1,15 +1,19 @@
 #include "Logger.h"
 
-#include <AsynFileAppender.h>
-
 #include <cstdarg>
 #include <cstring>
 #include <iostream>
 #include <mutex>
+#include <sys/syscall.h>
+#include <sys/types.h>
+
+#include "AsynFileAppender.h"
+#include "Config.hpp"
 
 namespace phase0
 {
-Logger::Logger() : level_(LogLevel::INFO), mutex_(), appender_(LogAppender::ptr(new AsynFileAppender("log")))
+// TODO Integration Configuration
+Logger::Logger() : level_(LogLevel::INFO), mutex_(), appender_(LogAppender::ptr(new AsynFileAppender(1024)))
 {
 }
 
@@ -22,14 +26,14 @@ void Logger::setAppender(LogAppender::ptr appender)
 void Logger::writeLog(
     LogLevel level, const char* fileName, const char* functionName, int32_t lineNum, const char* format, ...)
 {
-    // TODO from config file
+    // TODO Integration Configuration
     if (level < level_)
     {
         return;
     }
     va_list ap;
     va_start(ap, format);
-    // TODO buffer size
+    // TODO Integration Configuration
     char str[1024] = {0};
     int writenN = vsnprintf(str, 1024, format, ap);
     std::string res('\0', writenN);
@@ -53,6 +57,9 @@ void Logger::writeLog(
     prefix.append(functionName);
     prefix.append("|");
     prefix.append(std::to_string(lineNum) + " ");
+    prefix.append("(thread: ");
+    prefix.append(std::to_string(syscall(SYS_gettid)));
+    prefix.append(" )");
     prefix.append("[" + getLogLevelStr(level) + "]");
     prefix.append(" => ");
     prefix.append(res);

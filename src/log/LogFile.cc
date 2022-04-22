@@ -13,16 +13,16 @@ namespace phase0
 {
 const int64_t oneDayMicroSeconds = 86400000;
 
-LogFile::LogFile(const std::string& basename, int32_t rollSize, int32_t flushIntervel)
+LogFile::LogFile(const std::string& basename, int32_t rollSize, int32_t flushInterval)
     : basename_(basename)
     , rollSize_(rollSize)
-    , flushIntervel_(flushIntervel)
+    , flushInterval_(flushInterval)
     , lastFlush_(Timestamp::now().microSeconds())
     , lastRoll_(Timestamp::now().microSeconds())
 {
-    // for test
+    // TODO Integration Configuration
     writers_["mmap"] = Writer::ptr(new MMapFileWriter("log"));
-    // writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
+    writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
 }
 
 LogFile::~LogFile() {}
@@ -36,14 +36,13 @@ void LogFile::append(const char* log, int32_t length)
         writer->append(log, length);
         if (writer->writtenBytes() >= rollSize_ + length)
         {
-            std::cout << "roll" << std::endl;
             rollFile(writer);
             isRollNum++;
         }
         else
         {
             int64_t now = Timestamp::now().microSeconds();
-            if (now - lastFlush_ >= flushIntervel_)
+            if (now - lastFlush_ >= flushInterval_)
             {
                 flush(writer);
                 lastFlush_ = now;

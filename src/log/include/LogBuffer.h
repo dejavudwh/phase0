@@ -9,7 +9,7 @@ class LogBuffer
 {
 public:
     // TODO size
-    LogBuffer(size_t size = 200);
+    LogBuffer(size_t size);
     ~LogBuffer();
 
     void append(const char* data, size_t length);

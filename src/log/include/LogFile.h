@@ -28,7 +28,7 @@ private:
     std::string basename_;
 
     int64_t rollSize_;
-    int64_t flushIntervel_;
+    int64_t flushInterval_;
     int64_t lastFlush_;
     int64_t lastRoll_;
 

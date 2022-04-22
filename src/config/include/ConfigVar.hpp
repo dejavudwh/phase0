@@ -17,6 +17,9 @@
 #include <unordered_set>
 
 #include "Logger.h"
+#include "AsynFileAppender.h"
+#include "yaml-cpp/node/node.h"
+#include "yaml-cpp/node/parse.h"
 
 namespace phase0
 {
