@@ -18,7 +18,6 @@ AsynFileAppender::AsynFileAppender(const std::string& basename)
           [&]() -> std::thread { return std::thread(std::bind(&AsynFileAppender::listenLogAppend, this)); })
     , curBuffer_(new LogBuffer())
 {
-    mkdir(basename.c_str(), 0755);
     start();
 }
 

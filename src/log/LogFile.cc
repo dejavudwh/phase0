@@ -22,7 +22,7 @@ LogFile::LogFile(const std::string& basename, int32_t rollSize, int32_t flushInt
 {
     // for test
     writers_["mmap"] = Writer::ptr(new MMapFileWriter("log"));
-    writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
+    // writers_["stdout"] = Writer::ptr(new StdoutWriter(""));
 }
 
 LogFile::~LogFile() {}
@@ -36,6 +36,7 @@ void LogFile::append(const char* log, int32_t length)
         writer->append(log, length);
         if (writer->writtenBytes() >= rollSize_ + length)
         {
+            std::cout << "roll" << std::endl;
             rollFile(writer);
             isRollNum++;
         }
@@ -56,22 +57,10 @@ void LogFile::append(const char* log, int32_t length)
     }
 }
 
-void LogFile::flush(std::shared_ptr<Writer>& writer)
-{
-    // for (auto& it : writers_)
-    // {
-    //     it.second->flush();
-    // }
-    writer->flush();
-}
+void LogFile::flush(std::shared_ptr<Writer>& writer) { writer->flush(); }
 
 void LogFile::rollFile(std::shared_ptr<Writer>& writer)
 {
-    // for (auto& it : writers_)
-    // {
-    //     it.second->flush();
-    //     it.second->reset();
-    // }
     writer->flush();
     writer->reset();
 }

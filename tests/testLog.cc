@@ -12,9 +12,11 @@ int main()
     std::thread t1([]() {
         while (true)
         {
-            std::string str("string asd");
             // LOG_INFO("%s", str);
             LOG_DEBUG("%s", "basdsadsadasdsab");
+            LOG_DEBUG("%s", "cvbbvnbvnmnnm");
+            LOG_DEBUG("%s", "zzzzzzzzzzzzzzxczxc");
+
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
     });
