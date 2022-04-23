@@ -59,7 +59,7 @@ void Logger::writeLog(
     prefix.append(std::to_string(lineNum) + " ");
     prefix.append("(thread: ");
     prefix.append(std::to_string(syscall(SYS_gettid)));
-    prefix.append(" )");
+    prefix.append(") ");
     prefix.append("[" + getLogLevelStr(level) + "]");
     prefix.append(" => ");
     prefix.append(res);
