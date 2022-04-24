@@ -3,20 +3,27 @@
 #include <string>
 #include <thread>
 
-#include "AsynFileAppender.h"
-#include "LogAppender.h"
-#include "Logger.h"
+#include "LogMarco.h"
+#include "utils.h"
 
 int main()
 {
+    phase0::SetCurThreadName("thread0");
+    P0ROOT_LOG_INFO() << "THIS INFO LOG";
+    P0ROOT_LOG_DEBUG() << "THIS DEBUG LOG";
+    P0ROOT_LOG_WARN() << "THIS WARN LOG";
+    P0ROOT_LOG_ERROR() << "THIS ERROR LOG";
+    P0ROOT_LOG_FATAL() << "THIS FATAL LOG";
+
     std::thread t1([]() {
         while (true)
         {
-            // LOG_INFO("%s", str);
-            LOG_DEBUG("%s", "basdsadsadasdsab");
-            LOG_DEBUG("%s", "cvbbvnbvnmnnm");
-            LOG_DEBUG("%s", "zzzzzzzzzzzzzzxczxc");
-
+            phase0::SetCurThreadName("thread1");
+            P0ROOT_LOG_INFO() << "THIS INFO LOG";
+            P0ROOT_LOG_DEBUG() << "THIS DEBUG LOG";
+            P0ROOT_LOG_WARN() << "THIS WARN LOG";
+            P0ROOT_LOG_ERROR() << "THIS ERROR LOG";
+            P0ROOT_LOG_FATAL() << "THIS FATAL LOG";
             std::this_thread::sleep_for(std::chrono::seconds(5));
         }
     });

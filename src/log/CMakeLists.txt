@@ -1,3 +1,3 @@
 aux_source_directory(. SRC_LIST)
-add_library(log SHARED ${SRC_LIST})
-target_link_libraries(log pthread)
+add_library(phase0_log SHARED ${SRC_LIST})
+target_link_libraries(phase0_log pthread)

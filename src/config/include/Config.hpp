@@ -1,3 +1,4 @@
+#include <yaml-cpp/node/node.h>
 #include <yaml-cpp/yaml.h>
 
 #include <algorithm>
@@ -14,8 +15,7 @@
 #include <unordered_map>
 
 #include "ConfigVar.hpp"
-#include "Logger.h"
-#include "yaml-cpp/node/node.h"
+#include "LogMarco.h"
 
 namespace phase0
 {
@@ -58,7 +58,7 @@ public:
         }
         catch (...)
         {
-            LOG_ERROR("Load config file: %s failed", path.c_str());
+            P0SYS_LOG_ERROR() << "Load config file: " << path << " failed";
         }
     }
 
@@ -80,10 +80,9 @@ private:
             }
             else
             {
-                LOG_ERROR("Look up config failed: name=%s type conversion error, not %s, real type is %s",
-                          it->second->getTypeName().c_str(),
-                          typeToName<T>(),
-                          it->second->getTypeName().c_str());
+                P0SYS_LOG_ERROR() << "Look up config failed: name=" << it->second->getTypeName()
+                                  << "type conversion error, not " << typeToName<T>() << ", real type is "
+                                  << it->second->getTypeName();
                 return nullptr;
             }
         }
@@ -165,7 +164,7 @@ private:
         const static std::string legalChar = "abcdefghikjlmnopqrstuvwxyz._012345678";
         if (name.find_first_not_of(legalChar) != std::string::npos)
         {
-            LOG_ERROR("look up config name invalid: %s", name.c_str());
+            P0SYS_LOG_ERROR() << "look up config name invalid: "<< name;
             throw std::invalid_argument(name);
         }
     }

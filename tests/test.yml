@@ -1,0 +1,17 @@
+logger:
+    level: info
+    appender: 
+        type: AsynFileAppender
+        buffer_size: 1024
+        log_file:  
+            type: LogFile
+            roll_size: 10240
+            flush_intervel: 10
+            mem_size: 61440
+            file_name: "log"
+            writers:
+              - stdout_writer
+              - mmapfile_writer
+              
+        
+    

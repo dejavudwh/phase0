@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cxxabi.h>
+#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/node/parse.h>
 #include <yaml-cpp/yaml.h>
 
 #include <algorithm>
@@ -16,10 +18,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Logger.h"
-#include "AsynFileAppender.h"
-#include "yaml-cpp/node/node.h"
-#include "yaml-cpp/node/parse.h"
+#include "LogMarco.h"
 
 namespace phase0
 {
@@ -300,10 +299,10 @@ public:
         }
         catch (std::exception& e)
         {
-            LOG_FATAL("ConfigVar::toString exeception: %s, because can't convert from %s(%s) to YAML",
-                      e.what(),
-                      getTypeName().c_str(),
-                      description_.c_str());
+            P0SYS_LOG_ERROR() << "ConfigVar::toString exeception: " << e.what()
+                              << ", because can't convert from " << getTypeName() << "(" << description_
+                              << ")"
+                              << "to YAML";
         }
 
         return "";
@@ -317,10 +316,8 @@ public:
         }
         catch (std::exception& e)
         {
-            LOG_FATAL("ConfigVar::FromString exeception: %s, because can't convert from YAML(%s) to %s",
-                      e.what(),
-                      val.c_str(),
-                      getTypeName().c_str());
+            P0SYS_LOG_ERROR() << "ConfigVar::FromString exeception:" << e.what()
+                              << ", because can't convert from YAML(" << val << ") to " + getTypeName();
         }
 
         return true;
