@@ -5,6 +5,8 @@
 #include <system_error>
 #include <vector>
 
+#include "fiber.h"
+
 namespace phase0
 {
 static int __mkdir(const char* dirname)
@@ -108,11 +110,7 @@ void SetCurThreadName(std::string name) { prctl(PR_SET_NAME, name.c_str()); }
 
 pid_t GetCurThreadId() { return syscall(SYS_gettid); }
 
-int GetCurFiberId()
-{
-    extern uint64_t FiberId;
-    return FiberId;
-}
+int GetCurFiberId() { return phase0::Fiber::GetFiberId(); }
 
 /////////////////////////////////////////////////////////////////////////////
 // for debug

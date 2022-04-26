@@ -1,6 +1,7 @@
 #include "fiber.h"
 
 #include "Config.hpp"
+#include "utils.h"
 
 namespace phase0
 {
@@ -32,14 +33,14 @@ Fiber::Fiber()
         PHASE0_ASSERT2(false, "Getcontext failed!");
     }
 
-    ++FiberCount;
+    m_id = ++FiberCount;
 
-    P0SYS_LOG_DEBUG() << "Create main Fiber::Fiber";
+    P0SYS_LOG_DEBUG() << "Create main Fiber::Fiber: " << m_id;
 }
 
 Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool useCaller) : m_id(++FiberId), m_cb(cb)
 {
-    ++FiberCount;
+    m_id = ++FiberCount;
     m_stacksize = stacksize ? stacksize : DefaultFiberStackSize->getValue();
 
     m_stack = StackAllocator::Alloc(m_stacksize);
@@ -154,7 +155,7 @@ Fiber::ptr Fiber::GetThis()
     {
         return t_fiber->shared_from_this();
     }
-    Fiber::ptr mainFiber(new Fiber);
+    Fiber::ptr mainFiber(new Fiber());
 
     PHASE0_ASSERT(t_fiber == mainFiber.get());
 
@@ -169,6 +170,7 @@ void Fiber::YieldToReady()
     PHASE0_ASSERT(cur->m_state == EXEC);
 
     cur->m_state = READY;
+    P0SYS_LOG_DEBUG() << "Fiber:" << cur->m_id << " switch1 READY";
     cur->swapOut();
 }
 
@@ -179,6 +181,7 @@ void Fiber::YieldToHold()
     PHASE0_ASSERT(cur->m_state == EXEC);
 
     cur->m_state = HOLD;
+    P0SYS_LOG_DEBUG() << "Fiber:" << cur->m_id << " switch1 HOLD";
     cur->swapOut();
 }
 

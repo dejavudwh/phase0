@@ -1,16 +1,16 @@
+#include <string>
+#include <thread>
+#include <vector>
+
 #include "Logger.h"
 #include "fiber.h"
 #include "utils.h"
 
-#include <string>
-#include <vector>
-#include <thread>
-
-void run_in_fiber()
+void runInFiber()
 {
-    P0ROOT_LOG_INFO() << "run_in_fiber begin";
+    P0ROOT_LOG_INFO() << "runInFiber begin";
     phase0::Fiber::YieldToHold();
-    P0ROOT_LOG_INFO() << "run_in_fiber end";
+    P0ROOT_LOG_INFO() << "runInFiber end";
     phase0::Fiber::YieldToHold();
 }
 
@@ -20,7 +20,7 @@ void testFiber()
     {
         phase0::Fiber::GetThis();
         P0ROOT_LOG_INFO() << "main begin";
-        phase0::Fiber::ptr fiber(new phase0::Fiber(run_in_fiber));
+        phase0::Fiber::ptr fiber(new phase0::Fiber(runInFiber)); //4 5 6
         fiber->swapIn();
         P0ROOT_LOG_INFO() << "main after swapIn";
         fiber->swapIn();
@@ -33,7 +33,7 @@ void testFiber()
 int main(int argc, char** argv)
 {
     phase0::SetCurThreadName("Thread");
-
+    P0ROOT_LOG_INFO() << "main";
     std::vector<std::thread> thrs;
     for (int i = 0; i < 3; ++i)
     {
@@ -46,6 +46,6 @@ int main(int argc, char** argv)
     {
         i.join();
     }
-    
+
     return 0;
 }

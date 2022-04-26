@@ -1,3 +1,3 @@
-aux_source_directory(. SRC_LIST)
-add_library(phase0_utils SHARED ${SRC_LIST})
-target_link_libraries(phase0_utils)
+# aux_source_directory(. SRC_LIST)
+# add_library(phase0_utils SHARED ${SRC_LIST})
+# target_link_libraries(phase0_utils)
