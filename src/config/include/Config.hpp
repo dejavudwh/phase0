@@ -81,7 +81,7 @@ private:
             else
             {
                 P0SYS_LOG_ERROR() << "Look up config failed: name=" << it->second->getTypeName()
-                                  << "type conversion error, not " << typeToName<T>() << ", real type is "
+                                  << "type conversion error, not " << TypeToName<T>() << ", real type is "
                                   << it->second->getTypeName();
                 return nullptr;
             }
@@ -169,4 +169,5 @@ private:
         }
     }
 };
+
 }  // namespace phase0

@@ -23,7 +23,7 @@
 namespace phase0
 {
 template <typename T>
-static const char* typeToName()
+static const char* TypeToName()
 {
     static const char* name = abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr);
     return name;
@@ -287,7 +287,7 @@ public:
     using OnChange = std::function<void(const T& oldValue, const T& newValue)>;
 
     ConfigVar(const std::string& name, const std::string& description, const T& defaultVal)
-        : ConfigVarBase(name, description), val_(defaultVal)
+        : ConfigVarBase(name, description), m_val(defaultVal)
     {
     }
 
@@ -295,7 +295,7 @@ public:
     {
         try
         {
-            return ToStr()(val_);
+            return ToStr()(m_val);
         }
         catch (std::exception& e)
         {
@@ -323,46 +323,46 @@ public:
         return true;
     }
 
-    const T getValue() { return val_; }
+    const T getValue() { return m_val; }
 
     void setValue(const T& val)
     {
-        if (val == val_)
+        if (val == m_val)
         {
             return;
         }
-        for (auto& i : onChangeMap)
+        for (auto& i : m_onChangeMap)
         {
-            i.second(val_, val);
+            i.second(m_val, val);
         }
 
-        val_ = val;
+        m_val = val;
     }
 
-    std::string getTypeName() const override { return typeToName<T>(); }
+    std::string getTypeName() const override { return TypeToName<T>(); }
 
     uint64_t addListener(OnChange cb)
     {
         static uint64_t funcId = 0;
         funcId++;
-        onChangeMap[funcId] = cb;
+        m_onChangeMap[funcId] = cb;
         return funcId;
     }
 
-    void deleteListener(uint64_t funcId) { onChangeMap.erase(funcId); }
+    void deleteListener(uint64_t funcId) { m_onChangeMap.erase(funcId); }
 
     OnChange getListener(uint64_t funcId)
     {
-        auto& val = onChangeMap.find();
-        return val == onChangeMap.end() ? nullptr : val;
+        auto& val = m_onChangeMap.find();
+        return val == m_onChangeMap.end() ? nullptr : val;
     }
 
-    OnChange clearListener() { onChangeMap.clear(); }
+    OnChange clearListener() { m_onChangeMap.clear(); }
 
 private:
-    T val_;
-    std::unordered_map<uint64_t, OnChange> onChangeMap;
-    static uint64_t funcId_;
+    T m_val;
+    std::unordered_map<uint64_t, OnChange> m_onChangeMap;
+    static uint64_t m_funcId;
 };
 
 }  // namespace phase0

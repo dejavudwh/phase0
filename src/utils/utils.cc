@@ -1,6 +1,9 @@
 #include "utils.h"
 
 #include <cstring>
+#include <sstream>
+#include <system_error>
+#include <vector>
 
 namespace phase0
 {
@@ -53,6 +56,7 @@ bool FSUtil::Mkdir(const std::string& dirname)
         free(path);
         return true;
     } while (0);
+
     free(path);
     return false;
 }
@@ -90,9 +94,12 @@ bool FSUtil::OpenForWrite(std::ofstream& ofs, const std::string& filename, std::
     return ofs.is_open();
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// for log/thread/fiber
+
 std::string GetCurThreadName()
 {
-    char tname[16];
+    char* tname = new char[16];
     prctl(PR_GET_NAME, tname);
     return std::move(tname);
 }
@@ -103,8 +110,66 @@ pid_t GetCurThreadId() { return syscall(SYS_gettid); }
 
 int GetCurFiberId()
 {
-    // TODO
-    return 0;
+    extern uint64_t FiberId;
+    return FiberId;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// for debug
+static std::string demangle(const char* str)
+{
+    size_t size = 0;
+    int status = 0;
+    std::string rt;
+    rt.resize(256);
+    if (1 == sscanf(str, "%*[^(]%*[^_]%255[^)+]", &rt[0]))
+    {
+        char* v = abi::__cxa_demangle(&rt[0], nullptr, &size, &status);
+        if (v)
+        {
+            std::string result(v);
+            free(v);
+            return result;
+        }
+    }
+    if (1 == sscanf(str, "%255s", &rt[0]))
+    {
+        return rt;
+    }
+    return str;
+}
+
+void Backtrace(std::vector<std::string>& bt, int size, int skip)
+{
+    void** array = (void**)malloc((sizeof(void*) * size));
+    size_t s = backtrace(array, size);
+
+    char** strings = backtrace_symbols(array, s);
+    if (strings == NULL)
+    {
+        fprintf(stderr, "backtrace_synbols error\n");
+        return;
+    }
+
+    for (size_t i = skip; i < s; ++i)
+    {
+        bt.push_back(demangle(strings[i]));
+    }
+
+    free(strings);
+    free(array);
+}
+
+std::string BacktraceToString(int size, int skip, const std::string& prefix)
+{
+    std::vector<std::string> bt;
+    Backtrace(bt, size, skip);
+    std::stringstream ss;
+    for (size_t i = 0; i < bt.size(); ++i)
+    {
+        ss << prefix << bt[i] << std::endl;
+    }
+    return ss.str();
 }
 
 }  // namespace phase0

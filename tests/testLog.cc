@@ -28,5 +28,11 @@ int main()
         }
     });
 
+    P0SYS_LOG_INFO() << "THIS INFO LOG";
+    P0SYS_LOG_DEBUG() << "THIS DEBUG LOG";
+    P0SYS_LOG_WARN() << "THIS WARN LOG";
+    P0SYS_LOG_ERROR() << "THIS ERROR LOG";
+    P0SYS_LOG_FATAL() << "THIS FATAL LOG";
+
     t1.join();
 }

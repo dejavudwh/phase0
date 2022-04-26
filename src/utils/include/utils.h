@@ -1,12 +1,16 @@
 #pragma once
 
+#include <cxxabi.h>
+#include <sys/prctl.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <fstream>
 #include <string>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/prctl.h>
-#include <sys/syscall.h> 
+#include <vector>
+#include <execinfo.h>
 
 namespace phase0
 {
@@ -18,10 +22,15 @@ public:
     static std::string Dirname(const std::string& filename);
 };
 
+// for log/thread/fiber
 std::string GetCurThreadName();
 void SetCurThreadName(std::string name);
 pid_t GetCurThreadId();
 
 int GetCurFiberId();
+
+// for debug
+void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1);
+std::string BacktraceToString(int size = 64, int skip = 2, const std::string& prefix = "");
 
 }  // namespace phase0
