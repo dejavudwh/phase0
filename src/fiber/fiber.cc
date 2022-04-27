@@ -1,6 +1,7 @@
 #include "fiber.h"
 
 #include "Config.hpp"
+#include "scheduler.h"
 #include "utils.h"
 
 namespace phase0
@@ -33,14 +34,16 @@ Fiber::Fiber()
         PHASE0_ASSERT2(false, "Getcontext failed!");
     }
 
-    m_id = ++FiberCount;
+    m_id = ++FiberId;
+    ++FiberCount;
 
     P0SYS_LOG_DEBUG() << "Create main Fiber::Fiber: " << m_id;
 }
 
-Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool useCaller) : m_id(++FiberId), m_cb(cb)
+Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool runInScheduler)
+    : m_id(++FiberId), m_cb(cb), m_runInScheduler(runInScheduler)
 {
-    m_id = ++FiberCount;
+    ++FiberCount;
     m_stacksize = stacksize ? stacksize : DefaultFiberStackSize->getValue();
 
     m_stack = StackAllocator::Alloc(m_stacksize);
@@ -52,16 +55,9 @@ Fiber::Fiber(std::function<void()> cb, size_t stacksize, bool useCaller) : m_id(
     m_ctx.uc_stack.ss_sp = m_stack;
     m_ctx.uc_stack.ss_size = m_stacksize;
 
-    if (!useCaller)
-    {
-        makecontext(&m_ctx, &Fiber::MainFunc, 0);
-    }
-    else
-    {
-        makecontext(&m_ctx, &Fiber::CallerMainFunc, 0);
-    }
+    makecontext(&m_ctx, &Fiber::MainFunc, 0);
 
-    P0SYS_LOG_DEBUG() << "Create Fiber::Fiber id = " << m_id;
+    // P0SYS_LOG_DEBUG() << "Create Fiber::Fiber id = " << m_id;
 }
 
 Fiber::~Fiber()
@@ -85,7 +81,6 @@ Fiber::~Fiber()
             SetThis(nullptr);
         }
     }
-    P0SYS_LOG_DEBUG() << "Fiber::~Fiber id=" << m_id << " total=" << FiberCount;
 }
 
 void Fiber::reset(std::function<void()> cb)
@@ -108,42 +103,49 @@ void Fiber::reset(std::function<void()> cb)
     m_state = INIT;
 }
 
-void Fiber::call()
-{
-    SetThis(this);
-    m_state = EXEC;
-    if (swapcontext(&t_threadFiber->m_ctx, &m_ctx))
-    {
-        PHASE0_ASSERT2(false, "Swapcontext falied!");
-    }
-}
-
-void Fiber::back()
-{
-    SetThis(t_threadFiber.get());
-    if (swapcontext(&m_ctx, &t_threadFiber->m_ctx))
-    {
-        PHASE0_ASSERT2(false, "Swapcontext failed!");
-    }
-}
-
 void Fiber::swapIn()
 {
     SetThis(this);
     PHASE0_ASSERT(m_state != EXEC);
     m_state = EXEC;
-    if (swapcontext(&t_threadFiber->m_ctx, &m_ctx))
+
+    if (m_runInScheduler)
     {
-        PHASE0_ASSERT2(false, "Swapcontext failed!");
+        if (swapcontext(&(Scheduler::GetMainFiber()->m_ctx), &m_ctx))
+        {
+            PHASE0_ASSERT2(false, "Swapcontext failed!");
+        }
+    }
+    else
+    {
+        if (swapcontext(&t_threadFiber->m_ctx, &m_ctx))
+        {
+            PHASE0_ASSERT2(false, "Swapcontext failed!");
+        }
     }
 }
 
 void Fiber::swapOut()
 {
-    SetThis(t_fiber);
-    if (swapcontext(&m_ctx, &t_threadFiber->m_ctx))
+    PHASE0_ASSERT(m_state == EXEC || m_state == TERM);
+    SetThis(Scheduler::GetMainFiber());
+    if (m_state != TERM)
     {
-        PHASE0_ASSERT2(false, "Swapcontext failed!");
+        m_state = READY;
+    }
+    if (m_runInScheduler)
+    {
+        if (swapcontext(&m_ctx, &(Scheduler::GetMainFiber()->m_ctx)))
+        {
+            PHASE0_ASSERT2(false, "Swapcontext failed!");
+        }
+    }
+    else
+    {
+        if (swapcontext(&m_ctx, &t_threadFiber->m_ctx))
+        {
+            PHASE0_ASSERT2(false, "Swapcontext failed!");
+        }
     }
 }
 
@@ -169,11 +171,10 @@ void Fiber::YieldToReady()
 
     PHASE0_ASSERT(cur->m_state == EXEC);
 
-    cur->m_state = READY;
-    P0SYS_LOG_DEBUG() << "Fiber:" << cur->m_id << " switch1 READY";
     cur->swapOut();
 }
 
+// @
 void Fiber::YieldToHold()
 {
     Fiber::ptr cur = GetThis();
@@ -224,36 +225,6 @@ void Fiber::MainFunc()
     cur.reset();
     raw_ptr->swapOut();
 
-    PHASE0_ASSERT2(false, "never reach fiber id=" + std::to_string(raw_ptr->getId()));
-}
-
-void Fiber::CallerMainFunc()
-{
-    Fiber::ptr cur = GetThis();
-    PHASE0_ASSERT(cur);
-    try
-    {
-        cur->m_cb();
-        cur->m_cb = nullptr;
-        cur->m_state = TERM;
-    }
-    catch (std::exception& ex)
-    {
-        cur->m_state = EXCEPT;
-        P0ROOT_LOG_ERROR() << "Fiber Except: " << ex.what() << " fiber id=" << cur->getId() << std::endl
-                           << phase0::BacktraceToString();
-    }
-    catch (...)
-    {
-        cur->m_state = EXCEPT;
-        P0ROOT_LOG_ERROR() << "Fiber Except"
-                           << " fiber id=" << cur->getId() << std::endl
-                           << phase0::BacktraceToString();
-    }
-
-    auto raw_ptr = cur.get();
-    cur.reset();
-    raw_ptr->back();
     PHASE0_ASSERT2(false, "never reach fiber id=" + std::to_string(raw_ptr->getId()));
 }
 

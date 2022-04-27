@@ -6,11 +6,12 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
-
+#include <thread>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <execinfo.h>
+#include <pthread.h>
 
 namespace phase0
 {
@@ -25,7 +26,9 @@ public:
 // for log/thread/fiber
 std::string GetCurThreadName();
 void SetCurThreadName(std::string name);
+void SetThreadName(std::thread& thread, std::string name);
 pid_t GetCurThreadId();
+uint64_t GetThreadId(std::thread& thread);
 
 int GetCurFiberId();
 

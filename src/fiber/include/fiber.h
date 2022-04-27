@@ -25,15 +25,12 @@ public:
         EXCEPT,
     };
 
-    Fiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
+    Fiber(std::function<void()> cb, size_t stacksize = 0, bool runInScheduler = true);
     ~Fiber();
 
     void reset(std::function<void()> cb);
     void swapIn();
     void swapOut();
-
-    void call();
-    void back();
 
     uint64_t getId() const { return m_id; }
     State getState() const { return m_state; }
@@ -49,7 +46,6 @@ public:
     static uint64_t GetFiberId();
 
     static void MainFunc();
-    static void CallerMainFunc();
 
 private:
     Fiber();
@@ -57,10 +53,12 @@ private:
 private:
     uint64_t m_id = 0;
     uint32_t m_stacksize = 0;
-    State m_state = INIT;
+    State m_state = READY;
     ucontext_t m_ctx;
     void* m_stack = nullptr;
     std::function<void()> m_cb;
+
+    bool m_runInScheduler;
 };
 
 }  // namespace phase0

@@ -5,6 +5,7 @@
 #include <system_error>
 #include <vector>
 
+#include "LogMarco.h"
 #include "fiber.h"
 
 namespace phase0
@@ -108,7 +109,21 @@ std::string GetCurThreadName()
 
 void SetCurThreadName(std::string name) { prctl(PR_SET_NAME, name.c_str()); }
 
+void SetThreadName(std::thread& thread, std::string name)
+{
+    pthread_setname_np(thread.native_handle(), name.c_str());
+}
+
 pid_t GetCurThreadId() { return syscall(SYS_gettid); }
+
+uint64_t GetThreadId(std::thread& thread)
+{
+    // fuck hack
+    auto id = thread.get_id();
+    std::stringstream ss;
+    ss << id;
+    return std::stoull(ss.str());
+}
 
 int GetCurFiberId() { return phase0::Fiber::GetFiberId(); }
 
