@@ -21,3 +21,7 @@ target_link_libraries(testScheduler libphase0.so yaml-cpp pthread)
 set(SRC_LIST testIOManager.cc)
 add_executable(testIOManager ${SRC_LIST})
 target_link_libraries(testIOManager libphase0.so yaml-cpp pthread)
+
+set(SRC_LIST testTimer.cc)
+add_executable(testTimer ${SRC_LIST})
+target_link_libraries(testTimer libphase0.so yaml-cpp pthread)

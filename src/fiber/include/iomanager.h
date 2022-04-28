@@ -8,10 +8,11 @@
 
 #include "LogMarco.h"
 #include "scheduler.h"
+#include "timer.h"
 
 namespace phase0
 {
-class IOManager : public Scheduler
+class IOManager : public Scheduler, public TimerManager
 {
 public:
     using ptr = std::shared_ptr<IOManager>;
@@ -28,13 +29,13 @@ private:
     {
         struct EventContext
         {
-            Scheduler *scheduler = nullptr;
+            Scheduler* scheduler = nullptr;
             Fiber::ptr fiber;
             std::function<void()> cb;
         };
 
-        EventContext &getEventContext(Event event);
-        void resetEventContext(EventContext &ctx);
+        EventContext& getEventContext(Event event);
+        void resetEventContext(EventContext& ctx);
         void triggerEvent(Event event);
 
         EventContext read;
@@ -45,7 +46,7 @@ private:
     };
 
 public:
-    IOManager(size_t threads = 1, bool useCaller = true, const std::string &name = "IOManager");
+    IOManager(size_t threads = 1, bool useCaller = true, const std::string& name = "IOManager");
     ~IOManager();
 
     int addEvent(int fd, Event event, std::function<void()> cb = nullptr);
@@ -53,21 +54,24 @@ public:
     bool cancelEvent(int fd, Event event);
     bool cancelAll(int fd);
 
-    static IOManager *GetThis();
+    static IOManager* GetThis();
 
 protected:
     void tickle() override;
     bool stopping() override;
+    bool stopping(uint64_t& timeout);
     void idle() override;
 
     void contextResize(size_t size);
+
+    void onTimerInsertedAtFront() override;
 
 private:
     int m_epfd = 0;
     int m_tickleFds[2];
     std::atomic<size_t> m_pendingEventCount = {0};
     std::mutex m_mutex;
-    std::vector<FdContext *> m_fdContexts;
+    std::vector<FdContext*> m_fdContexts;
 };
 
 }  // namespace phase0

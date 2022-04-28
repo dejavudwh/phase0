@@ -346,7 +346,15 @@ void IOManager::tickle()
     PHASE0_ASSERT(rt == 1);
 }
 
+void IOManager::onTimerInsertedAtFront() { tickle(); }
+
 bool IOManager::stopping() { return m_pendingEventCount == 0 && Scheduler::stopping(); }
+
+bool IOManager::stopping(uint64_t& timeout)
+{
+    timeout = getNextTimer();
+    return timeout == ~0ull && m_pendingEventCount == 0 && Scheduler::stopping();
+}
 
 void IOManager::idle()
 {
@@ -358,23 +366,45 @@ void IOManager::idle()
 
     while (true)
     {
-        if (stopping())
+        uint64_t nextTimeout = 0;
+        if (PHASE0_UNLIKELY(stopping(nextTimeout)))
         {
-            P0SYS_LOG_DEBUG() << "Fiber: name=" << getName() << "idle stopping exit";
+            P0SYS_LOG_DEBUG() << "name=" << getName() << "idle stopping exit";
             break;
         }
 
-        static const int MAX_TIMEOUT = 5000;
-        int rt = epoll_wait(m_epfd, events, MAX_EVNETS, MAX_TIMEOUT);
-        if (rt < 0)
+        int rt = 0;
+        do
         {
-            if (errno == EINTR)
+            static const int MAX_TIMEOUT = 5000;
+            if (nextTimeout != ~0ull)
+            {
+                nextTimeout = std::min((int)nextTimeout, MAX_TIMEOUT);
+            }
+            else
+            {
+                nextTimeout = MAX_TIMEOUT;
+            }
+            rt = epoll_wait(m_epfd, events, MAX_EVNETS, (int)nextTimeout);
+            if (rt < 0 && errno == EINTR)
             {
                 continue;
             }
-            P0SYS_LOG_ERROR() << "epoll_wait(" << m_epfd << ") (rt=" << rt << ") (errno=" << errno
-                              << ") (errstr:" << strerror(errno) << ")";
-            break;
+            else
+            {
+                break;
+            }
+        } while (true);
+
+        std::vector<std::function<void()>> cbs;
+        listExpiredCb(cbs);
+        if (!cbs.empty())
+        {
+            for (const auto& cb : cbs)
+            {
+                schedule(cb);
+            }
+            cbs.clear();
         }
 
         for (int i = 0; i < rt; ++i)

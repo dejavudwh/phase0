@@ -2,6 +2,7 @@ aux_source_directory(log/ LOG_LIST)
 aux_source_directory(config/ CONFIG_LIST)
 aux_source_directory(utils/ UTILS_LIST)
 aux_source_directory(fiber/ FIBER_LIST)
+aux_source_directory(timer/ TIMER_LIST)
 
-add_library(phase0 SHARED ${LOG_LIST} ${UTILS_LIST} ${SRC_LIST} ${FIBER_LIST})
+add_library(phase0 SHARED ${LOG_LIST} ${UTILS_LIST} ${SRC_LIST} ${TIMER_LIST} ${FIBER_LIST})
 target_link_libraries(phase0 pthread)

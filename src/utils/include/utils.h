@@ -32,6 +32,8 @@ uint64_t GetThreadId(std::thread& thread);
 
 int GetCurFiberId();
 
+uint64_t GetElapsedMS();
+
 // for debug
 void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1);
 std::string BacktraceToString(int size = 64, int skip = 2, const std::string& prefix = "");

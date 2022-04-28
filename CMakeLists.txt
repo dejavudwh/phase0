@@ -19,6 +19,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src/log/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/config/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/utils/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/fiber/include)
+include_directories(${CMAKE_SOURCE_DIR}/src/timer/include)
 include_directories(${CMAKE_SOURCE_DIR}/thirdpart)
 include_directories(${CMAKE_SOURCE_DIR}/examples)
 
