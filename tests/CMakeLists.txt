@@ -17,3 +17,7 @@ target_link_libraries(testFiber2 libphase0.so yaml-cpp pthread)
 set(SRC_LIST testScheduler.cc)
 add_executable(testScheduler ${SRC_LIST})
 target_link_libraries(testScheduler libphase0.so yaml-cpp pthread)
+
+set(SRC_LIST testIOManager.cc)
+add_executable(testIOManager ${SRC_LIST})
+target_link_libraries(testIOManager libphase0.so yaml-cpp pthread)

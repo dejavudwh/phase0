@@ -1,17 +1,15 @@
 #pragma once
 
-#include "fiber.h"
-
 #include <list>
 #include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
 
+#include "fiber.h"
+
 namespace phase0
 {
-
-
 class Scheduler
 {
 public:
@@ -51,6 +49,8 @@ protected:
     virtual bool stopping();
 
     void setThis();
+
+    bool hasIdleThreads() { return m_idleThreadCount > 0; }
 
 private:
     struct ScheduleTask

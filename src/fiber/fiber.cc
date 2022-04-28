@@ -1,6 +1,7 @@
 #include "fiber.h"
 
 #include "Config.hpp"
+#include "LogMarco.h"
 #include "scheduler.h"
 #include "utils.h"
 
