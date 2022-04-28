@@ -4,6 +4,7 @@
 #include <mutex>
 #include <string>
 
+#include "singleton.h"
 #include "Logger.h"
 
 namespace phase0
@@ -21,17 +22,6 @@ private:
     std::mutex m_mutex;
     std::map<std::string, Logger::ptr> m_loggers;
     Logger::ptr m_root;
-};
-
-template <class T, class X = void, int N = 0>
-class Singleton
-{
-public:
-    static T* GetInstance()
-    {
-        static T v;
-        return &v;
-    }
 };
 
 using LoggerManagerInstance = Singleton<LoggerManager>;

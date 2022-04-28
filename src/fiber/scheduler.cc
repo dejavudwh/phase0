@@ -3,6 +3,7 @@
 #include <mutex>
 
 #include "LogMarco.h"
+#include "hook.h"
 #include "utils.h"
 
 namespace phase0
@@ -79,6 +80,7 @@ void Scheduler::run()
 {
     P0SYS_LOG_DEBUG() << "Scheduler run!";
     setThis();
+    setHookEnable(true);
     if (phase0::GetCurThreadId() != m_rootThread)
     {
         t_schedulerFiber = Fiber::GetThis().get();
