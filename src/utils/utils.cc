@@ -97,6 +97,15 @@ bool FSUtil::OpenForWrite(std::ofstream& ofs, const std::string& filename, std::
     return ofs.is_open();
 }
 
+bool FSUtil::Unlink(const std::string& filename, bool exist)
+{
+    if (!exist && __lstat(filename.c_str()))
+    {
+        return true;
+    }
+    return ::unlink(filename.c_str()) == 0;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // for log/thread/fiber
 

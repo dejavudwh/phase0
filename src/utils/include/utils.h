@@ -1,17 +1,18 @@
 #pragma once
 
 #include <cxxabi.h>
+#include <execinfo.h>
+#include <pthread.h>
 #include <sys/prctl.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <thread>
+
 #include <fstream>
 #include <string>
+#include <thread>
 #include <vector>
-#include <execinfo.h>
-#include <pthread.h>
 
 namespace phase0
 {
@@ -21,6 +22,7 @@ public:
     static bool Mkdir(const std::string& dirname);
     static bool OpenForWrite(std::ofstream& ofs, const std::string& filename, std::ios_base::openmode mode);
     static std::string Dirname(const std::string& filename);
+    static bool Unlink(const std::string& filename, bool exist = false);
 };
 
 // for log/thread/fiber

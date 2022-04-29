@@ -29,3 +29,15 @@ target_link_libraries(testTimer libphase0.so yaml-cpp pthread libdl.so)
 set(SRC_LIST testHook.cc)
 add_executable(testHook ${SRC_LIST})
 target_link_libraries(testHook libphase0.so yaml-cpp pthread libdl.so)
+
+set(SRC_LIST testAddress.cc)
+add_executable(testAddress ${SRC_LIST})
+target_link_libraries(testAddress libphase0.so yaml-cpp pthread libdl.so)
+
+set(SRC_LIST testSocketTcpClient.cc)
+add_executable(testSocketTcpClient ${SRC_LIST})
+target_link_libraries(testSocketTcpClient libphase0.so yaml-cpp pthread libdl.so)
+
+set(SRC_LIST testSocketTcpServer.cc)
+add_executable(testSocketTcpServer ${SRC_LIST})
+target_link_libraries(testSocketTcpServer libphase0.so yaml-cpp pthread libdl.so)
