@@ -41,3 +41,11 @@ target_link_libraries(testSocketTcpClient libphase0.so yaml-cpp pthread libdl.so
 set(SRC_LIST testSocketTcpServer.cc)
 add_executable(testSocketTcpServer ${SRC_LIST})
 target_link_libraries(testSocketTcpServer libphase0.so yaml-cpp pthread libdl.so)
+
+set(SRC_LIST testBytearray.cc)
+add_executable(testBytearray ${SRC_LIST})
+target_link_libraries(testBytearray libphase0.so yaml-cpp pthread libdl.so)
+
+set(SRC_LIST testTcpServer.cc)
+add_executable(testTcpServer ${SRC_LIST})
+target_link_libraries(testTcpServer libphase0.so yaml-cpp pthread libdl.so)
