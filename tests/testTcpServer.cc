@@ -1,14 +1,5 @@
-/**
- * @file test_tcp_server.cc
- * @brief TcpServer类测试
- * @version 0.1
- * @date 2021-09-18
- */
 #include "tcpserver.h"
 
-/**
- * @brief 自定义TcpServer类，重载handleClient方法
- */
 class MyTcpServer : public phase0::TcpServer
 {
 protected:
@@ -20,7 +11,7 @@ void MyTcpServer::handleClient(phase0::Socket::ptr client)
     P0ROOT_LOG_INFO() << "new client: " << client->toString();
     static std::string buf;
     buf.resize(4096);
-    client->recv(&buf[0], buf.length());  // 这里有读超时，由tcp_server.read_timeout配置项进行配置，默认120秒
+    client->recv(&buf[0], buf.length());  
     P0ROOT_LOG_INFO() << "recv: " << buf;
     client->close();
 }

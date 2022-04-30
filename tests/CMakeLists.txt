@@ -49,3 +49,7 @@ target_link_libraries(testBytearray libphase0.so yaml-cpp pthread libdl.so)
 set(SRC_LIST testTcpServer.cc)
 add_executable(testTcpServer ${SRC_LIST})
 target_link_libraries(testTcpServer libphase0.so yaml-cpp pthread libdl.so)
+
+set(SRC_LIST testHttpServer.cc)
+add_executable(testHttpServer ${SRC_LIST})
+target_link_libraries(testHttpServer libphase0.so yaml-cpp pthread libdl.so)

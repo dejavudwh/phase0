@@ -23,6 +23,8 @@ include_directories(${CMAKE_SOURCE_DIR}/src/timer/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/hook/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/socket/include)
 include_directories(${CMAKE_SOURCE_DIR}/src/tcpserver/include)
+include_directories(${CMAKE_SOURCE_DIR}/src/stream/include)
+include_directories(${CMAKE_SOURCE_DIR}/src/http/include)
 include_directories(${CMAKE_SOURCE_DIR}/thirdpart)
 include_directories(${CMAKE_SOURCE_DIR}/examples)
 

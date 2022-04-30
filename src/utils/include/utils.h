@@ -25,6 +25,20 @@ public:
     static bool Unlink(const std::string& filename, bool exist = false);
 };
 
+class StringUtil
+{
+public:
+    static std::string Format(const char* fmt, ...);
+    static std::string Formatv(const char* fmt, va_list ap);
+    static std::string UrlEncode(const std::string& str, bool space_as_plus = true);
+    static std::string UrlDecode(const std::string& str, bool space_as_plus = true);
+    static std::string Trim(const std::string& str, const std::string& delimit = " \t\r\n");
+    static std::string TrimLeft(const std::string& str, const std::string& delimit = " \t\r\n");
+    static std::string TrimRight(const std::string& str, const std::string& delimit = " \t\r\n");
+    static std::string WStringToString(const std::wstring& ws);
+    static std::wstring StringToWString(const std::string& s);
+};
+
 // for log/thread/fiber
 std::string GetCurThreadName();
 void SetCurThreadName(std::string name);
@@ -35,6 +49,8 @@ uint64_t GetThreadId(std::thread& thread);
 int GetCurFiberId();
 
 uint64_t GetElapsedMS();
+
+std::string Time2Str(time_t ts = time(0), const std::string& format = "%Y-%m-%d %H:%M:%S");
 
 // for debug
 void Backtrace(std::vector<std::string>& bt, int size = 64, int skip = 1);
